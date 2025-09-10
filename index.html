@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pill Reminder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .form-container {
+            padding: 30px 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .results h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .pill-times {
+            display: grid;
+            gap: 10px;
+        }
+
+        .pill-time {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .pill-time .time {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .pill-time .dose {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pill-time.taken {
+            background: #93e097;
+        }
+
+        .pill-time.taken .dose {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+
+            .form-container {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Pill Reminder</h1>
+            <p>Set your medication schedule</p>
+        </div>
+
+        <div class="form-container">
+            <form id="pillForm">
+                <div class="form-group">
+                    <label for="startTime">Start Time</label>
+                    <input type="time" id="startTime" name="startTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="interval">Interval</label>
+                    <input id="interval" name="interval" min="1" required placeholder="2.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="repetitions">Number of Doses</label>
+                    <input type="number" id="repetitions" name="repetitions" min="1" max="20" required
+                        placeholder="e.g., 3">
+                </div>
+
+                <button type="submit" class="submit-btn">Generate Schedule</button>
+            </form>
+
+            <div class="error" id="errorMessage"></div>
+
+            <div class="results" id="results">
+                <h3>Your Pill Schedule</h3>
+                <div class="pill-times" id="pillTimes"></div>
+                <button type="button" class="reset-btn" onclick="resetForm()">Create New Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('pillForm').addEventListener('submit', function (e) {
+            e.preventDefault()
+
+            const startTime = document.getElementById('startTime').value
+            const interval = Number(document.getElementById('interval').value)
+            const repetitions = parseInt(document.getElementById('repetitions').value)
+            const errorDiv = document.getElementById('errorMessage')
+            const resultsDiv = document.getElementById('results')
+            const pillTimesDiv = document.getElementById('pillTimes')
+
+            // Clear previous errors and results
+            errorDiv.style.display = 'none'
+            resultsDiv.style.display = 'none'
+
+            // Validation
+            if (!startTime || !interval || !repetitions) {
+                showError('Please fill in all fields')
+                return
+            }
+
+            if (repetitions < 1 || repetitions > 20) {
+                showError('Number of doses must be between 1 and 20')
+                return
+            }
+
+            if (interval < 1) {
+                showError('Interval must be at least 1 hour')
+                return
+            }
+
+            // Calculate pill times
+            const pillTimes = calculatePillTimes(startTime, interval, repetitions)
+
+            // Display results
+            displayPillTimes(pillTimes)
+            resultsDiv.style.display = 'block'
+
+            setLocalStorage({
+                startTime,
+                interval,
+                repetitions,
+                pillTimes
+            })
+
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' })
+        })
+
+        const LOCAL_STORAGE_KEY = 'pillTimes'
+
+        function getHoursAndMinutes(interval) {
+            const hours = Math.floor(interval)
+            const minutes = Math.round((interval - hours) * 60)
+            return { hours, minutes }
+        }
+
+        function calculatePillTimes(startTime, interval, repetitions) {
+            const times = []
+            const [hours, minutes] = startTime.split(':').map(Number)
+            let currentTime = new Date()
+            currentTime.setHours(hours, minutes, 0, 0)
+
+            for (let i = 0; i < repetitions; i++) {
+                const timeString = currentTime.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                })
+
+                times.push({
+                    time: timeString,
+                    dose: i + 1
+                })
+
+                // Add interval hours
+                const { hours: intervalHours, minutes } = getHoursAndMinutes(interval)
+                currentTime.setHours(currentTime.getHours() + intervalHours)
+                currentTime.setMinutes(currentTime.getMinutes() + minutes)
+            }
+
+            return times
+        }
+
+        function displayPillTimes(times) {
+            const pillTimesDiv = document.getElementById('pillTimes')
+            pillTimesDiv.innerHTML = ''
+
+            const pillTaken = (time) => {
+                const timeData = time.split(':').map(data => parseInt(data))
+                const isPM = time.includes('PM')
+                const now = new Date()
+                now.setHours(timeData[0], timeData[1], 0, 0)
+                if (isPM) {
+                    now.setHours(now.getHours() + 12)
+                }
+                return now.getTime() < new Date().getTime()
+            }
+
+            times.forEach((pill, index) => {
+                const pillDiv = document.createElement('div')
+                pillDiv.className = `pill-time ${pillTaken(pill.time) ? 'taken' : ''}`
+                pillDiv.innerHTML = `
+                    <span class="time">${pill.time}</span>
+                    <span class="dose">Dose ${pill.dose}</span>
+                `
+                pillTimesDiv.appendChild(pillDiv)
+            })
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage')
+            errorDiv.textContent = message
+            errorDiv.style.display = 'block'
+        }
+
+        function resetForm() {
+            document.getElementById('pillForm').reset()
+            document.getElementById('results').style.display = 'none'
+            document.getElementById('errorMessage').style.display = 'none'
+        }
+
+        function getLocalStorage() {
+            return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
+        }
+
+        function setLocalStorage(data) {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data))
+        }
+
+        // Set default start time to current time
+        window.addEventListener('load', function () {
+            const localStorageData = getLocalStorage()
+            if (localStorageData) {
+                const resultsDiv = document.getElementById('results')
+                document.getElementById('startTime').value = localStorageData.startTime
+                document.getElementById('interval').value = localStorageData.interval
+                document.getElementById('repetitions').value = localStorageData.repetitions
+                displayPillTimes(localStorageData.pillTimes)
+                resultsDiv.style.display = 'block'
+                resultsDiv.scrollIntoView({ behavior: 'smooth' })
+            }
+            const now = new Date()
+            const currentTime = now.toTimeString().slice(0, 5)
+            document.getElementById('startTime').value = currentTime
+        });
+    </script>
+</body>
+
+</html>
